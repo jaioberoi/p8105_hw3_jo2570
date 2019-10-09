@@ -25,7 +25,7 @@ data("instacart")
 Describing the Instacart data: 
 
 the size of the `instacart` dataset is `r nrow(instacart)` rows and `r ncol(instacart)` columns.
-we can see that the average order hour of the day is `r mean(pull(instacart, order_hour_of_day)` and the median hour is `r mean(pull(instacart, order_hour_of_day)`. The average number of days since a prior order for a user/customer is `r mean(pull(instacart, days_since_prior_order))` and the median value is `r median(pull(instacart, days_since_prior_order))`. 
+we can see that the average order hour of the day is `r mean(pull(instacart, order_hour_of_day))` and the median hour is `r mean(pull(instacart, order_hour_of_day))`. The average number of days since a prior order for a user/customer is `r mean(pull(instacart, days_since_prior_order))` and the median value is `r median(pull(instacart, days_since_prior_order))`. 
 
 We can also get a breif run-down on the data by looking the results of this skim code:
 ```{r}
@@ -37,8 +37,16 @@ instacart %>%
   count(aisle_id) %>%
   arrange(desc(n))
 ```
-
 Aisles 83 and 24 have the most products ordered with a count of over 150,000
+
+Creating a plot showing the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered: 
+```{r}
+instacart %>%
+  count(aisle_id) %>%
+  filter(n > 10000) %>%
+  ggplot(aes(x = aisle_id, y = n)) + geom_line() + 
+  labs( title = "Number of Items Ordered for Aisles with n > 10000", x = "Aisle", y = " Number of Items Ordered")
+```
 
 
 

@@ -1,0 +1,14 @@
+---
+title: "hw3_jo2570"
+author: "Jai Oberoi"
+date: "09/10/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```

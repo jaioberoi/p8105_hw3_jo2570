@@ -137,13 +137,14 @@ brfss_ny = brfss_clean %>%
   filter(topic %in% c("Overall Health"), 
          year %in% c("2006", "2010"),
          response %in% c("Excellent", "Very good", "Good", "Fair", "Poor"),
-         locationabbr %in% c("NY")) %>% 
-  group_by(locationabbr, year, response) %>%
-  summarise(mean_data_value = mean(data_value))
+         locationabbr %in% c("NY"))
 
 brfss_ny %>% 
-  ggplot(aes(x = response, y = mean_data_value, color = year)) + geom_point() + facet_grid(.~year)
+  ggplot(aes(x = response, y = data_value, color = year)) + geom_point() + facet_grid(.~year)
 ```
+
+
+Problem 3 
 
 
 

@@ -88,7 +88,61 @@ brfss_clean = brfss_smart2010 %>%
   janitor::clean_names() %>%
   filter(topic %in% c("Overall Health"),
          response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) %>%
-  mutate(response = factor(response, labels = c("Poor","Fair","Good","Very good", "Excellent")))
+  mutate(response = factor(response, labels = c("Poor","Fair","Good","Very good", "Excellent"))) 
+```
+
+To find out which states were observed at 7 or more locations in 2002:
+```{r}
+brfss_clean %>% 
+  filter(year == "2002") %>% 
+  group_by(locationabbr) %>%
+  summarize(
+    n = n_distinct(geo_location)) %>%
+  filter(n > 6) %>% 
+  arrange(desc(n))
+```
+PA, MA, NJ, CT, FL, NC
+
+
+To find out which states were observed at 7 or more locations in 2010:
+```{r}
+brfss_clean %>% 
+  filter(year == "2010") %>% 
+  group_by(locationabbr) %>%
+  summarize(
+    n = n_distinct(geo_location)) %>%
+  filter(n > 6) %>% 
+  arrange(desc(n)) 
+```
+FL, NJ, TX, CA, MD, NC, NE, WA, MA, NY, OH, CO, PA, SC
+
+
+Limiting the cleaned dataset to only "Excellent" responses: 
+```{r}
+brfss_excellent = brfss_clean %>% 
+  filter(response == "Excellent") %>% 
+  group_by(locationabbr, year, response) %>%
+  summarise(mean_data_value = mean(data_value))
+```
+
+Creating a “spaghetti” plot of this average value over time within a state (from brfss_excellent): 
+```{r}
+ggplot(brfss_excellent, aes(x = year, y = mean_data_value, color = locationabbr)) + 
+  geom_line(se = FALSE, na.rm = TRUE)
+```
+
+Creating a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State: 
+```{r}
+brfss_ny = brfss_clean %>%
+  filter(topic %in% c("Overall Health"), 
+         year %in% c("2006", "2010"),
+         response %in% c("Excellent", "Very good", "Good", "Fair", "Poor"),
+         locationabbr %in% c("NY")) %>% 
+  group_by(locationabbr, year, response) %>%
+  summarise(mean_data_value = mean(data_value))
+
+brfss_ny %>% 
+  ggplot(aes(x = response, y = mean_data_value, color = year)) + geom_point() + facet_grid(.~year)
 ```
 
 

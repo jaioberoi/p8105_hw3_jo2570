@@ -140,11 +140,45 @@ brfss_ny = brfss_clean %>%
          locationabbr %in% c("NY"))
 
 brfss_ny %>% 
-  ggplot(aes(x = response, y = data_value, color = year)) + geom_point() + facet_grid(.~year)
+  ggplot(aes(x = response, y = data_value, color = response)) + geom_boxplot() + facet_grid(. ~year)
 ```
 
 
 Problem 3 
+
+Reading in the accelerometer data:
+```{r}
+accel_data = read_csv(file = "./data/accel_data.csv") %>% 
+  janitor::clean_names()
+```
+
+Cleaning / wrangling accel_data: 
+```{r}
+accel_clean = accel_data %>% 
+  mutate(
+    day = str_to_lower(day),
+    day = factor(day, labels = c("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")), 
+    weekend = day %in% c("saturday", "sunday"),
+    weekday = day %in% c("monday", "tuesday", "wednesday", "thursday", "friday"),
+    weekday_weekend = ifelse(weekend, 1, 0)
+  ) %>% 
+  select(-weekend, -weekday)
+```
+
+Aggregating activities into daily_ativities and creating a plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week: 
+```{r}
+accel_daily = accel_clean %>% 
+  pivot_longer(activity_1:activity_1440,
+               names_to = "activity_minute",
+               values_to = "activity") %>% 
+    group_by(day_id, day, weekday_weekend) %>% 
+  summarise(daily_activity = sum(activity))
+
+accel_daily %>% 
+  ggplot(aes(x = day_id, y = daily_activity, color = day)) + geom_point() + geom_line()
+
+#There are no apparent trends (weednesdays and some weekdats have lower activity)
+```
 
 
 
